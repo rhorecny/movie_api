@@ -57,7 +57,6 @@ let topMovies = [
   },
 ];
 
-// morgan logger
 let myLogger = (req, res, next) => {
   console.log(req.url);
   next();
