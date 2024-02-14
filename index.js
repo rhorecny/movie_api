@@ -1,296 +1,217 @@
-const express = require("express"),
-  bodyParser = require("body-parser"),
-  uuid = require("uuid");
+const express = require("express");
 const app = express();
+const bodyParser = require("body-parser");
+uuid = require("uuid");
+const mongoose = require("mongoose");
+const Models = require("./models");
+const Movies = Models.Movie;
+const Users = Models.User;
 
+mongoose.connect("mongodb://localhost:27017/cfDB", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+// Middleware for parsing requests
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//users
+//update
 
-let users = [
-  {
-    "id": "1",
-    "name": "John",
-    "favoriteMovie":[]
-    },
-  {
-    "id": "2",
-    "name": "Ryan",
-    "favoriteMovie": ["Star Wars: Episode VII - The Force Awakens", "Avatar"]
-  }
-]
+// Update a user's info, by username
 
-//top ten list
-let movies = [
-  {
-    Id: "1",
-    Title: "Avatar",
-      Genre: { 
-      "Name": "Action",
-      "Description": "The action film is a film genre which predominantly feature chase sequences, fights, shootouts, explosions, and stunt work."
+app.put("/users/:UserName", async (req, res) => {
+  await Users.findOneAndUpdate(
+    { UserName: req.params.UserName },
+    {
+      $set: {
+        UserName: req.body.UserName,
+        Password: req.body.Password,
+        Email: req.body.Email,
+        Birthday: req.body.Birthday,
+      },
     },
-    Director:{
-      "Name": "James Cameron"
-    },
-    ReleaseYear: "2009"
-  },
+    { new: true }
+  )
+    .then((updatedUser) => {
+      res.json(updatedUser);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-  {
-    Id: "2",
-    Title: "Avengers: Endgame",
-    Genre: { 
-      "Name": "Action",
-      "Description": "The action film is a film genre which predominantly feature chase sequences, fights, shootouts, explosions, and stunt work."
-    },
-    Director:{
-      "Name": "Anthony Russo"
-    },
-    ReleaseYear: "2019"
-  },
+//CREATE
 
-  {
-    Id: "3",
-    Title: "Avatar: The Way of Water",
-    Genre: { 
-      "Name": "Action",
-      "Description": "The action film is a film genre which predominantly feature chase sequences, fights, shootouts, explosions, and stunt work."
-    },
-    Director:{
-      "Name": "James Cameron"
-    },
-    ReleaseYear: "2022"
-  },
+//Add a user
 
-  {
-    Id: "4",
-    Title: "Titanic",
-    Genre: {
-      "Name": "Drama",
-      "Description": "In film and television, drama is a category or genre of narrative fiction (or semi-fiction) intended to be more serious than humorous in tone."
-    },
-    Director:{
-      "Name": "James Cameron"
-    },
-    ReleaseYear: "1997"
-  },
+app.post("/users", async (req, res) => {
+  await Users.findOne({ UserName: req.body.UserName })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.UserName + "already exists");
+      } else {
+        Users.create({
+          UserName: req.body.UserName,
+          Password: req.body.Password,
+          Email: req.body.Email,
+          Birthday: req.body.Birthday,
+        })
+          .then((user) => {
+            res.status(201).json(user);
+          })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send("Error: " + error);
+          });
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("Error: " + error);
+    });
+});
 
-  {
-    Id: "5",
-    Title: "Star Wars: Episode VII - The Force Awakens",
-    Genre: { 
-      "Name": "Action",
-      "Description": "The action film is a film genre which predominantly feature chase sequences, fights, shootouts, explosions, and stunt work."
+// Add a movie to a user's list of favorites
+app.post("/users/:UserName/movies/:MovieID", async (req, res) => {
+  await Users.findOneAndUpdate(
+    { UserName: req.params.UserName },
+    {
+      $push: { FavoriteMovies: req.params.MovieID },
     },
-    Director:{
-      "Name": "JJ Abrams"
-    },
-    ReleaseYear: "2015"
-  },
+    { new: true }
+  )
+    .then((updatedUser) => {
+      res.json(updatedUser);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
-  {
-    Id: "6",
-    Title: "Avengers: Infinity War", 
-    Genre: { 
-      "Name": "Action",
-      "Description": "The action film is a film genre which predominantly feature chase sequences, fights, shootouts, explosions, and stunt work."
-    },
-    Director:{
-      "Name": "Anthony Russo"
-    },
-    ReleaseYear: "2018"
-    
-  },
 
-  {
-    Id: "7",
-    Title: "Spider-Man: No Way Home",
-    Genre: { 
-      "Name": "Action",
-      "Description": "The action film is a film genre which predominantly feature chase sequences, fights, shootouts, explosions, and stunt work."
-    },
-    Director:{
-      "Name": "Jon Watts"
-    },
-    ReleaseYear: "2021"
-  },
 
-  {
-    Id: "8",
-    Title: "Jurassic World",
-    Genre: { 
-      Name: "Action",
-      Description: "The action film is a film genre which predominantly feature chase sequences, fights, shootouts, explosions, and stunt work."
-    },
-    Director:{
-      "Name":"Colin Trevorrow"
-    },
-    ReleaseYear: "2015"
-
-  },
-
-  {
-    Id: "9",
-    Title: "The Lion King",
-    Genre:{ 
-      Name:  "Animation",
-      Description: "Animation is a filmmaking technique by which still images are manipulated to create moving images."
-    },
-    Director:{
-      "Name": "Jon Favreau"
-    },
-    ReleaseYear: "2019"
-  },
-
-  {
-    Id: "10",
-    Title: "Avengers: Age of Ultron", 
-    Genre: { 
-      Name: "Action",
-      Description: "The action film is a film genre which predominantly feature chase sequences, fights, shootouts, explosions, and stunt work."
-    },
-    Director:{
-      "Name":"Joss Whedon"
-    },
-    ReleaseYear: "2012"
-  },
-];
-
-let myLogger = (req, res, next) => {
-  console.log(req.url);
-  next();
-};
-
-app.use(myLogger);
-
-//get requests
+//GET requests
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the movie API!");
+  res.send("Welcome to the Movie API");
 });
 
-app.get("/movies", (req, res) => {
-  res.status(200).json(movies);
+
+//Movie requests
+app.get("/movies", async (req, res) => {
+  await Movies.find()
+    .then((movies) => {
+      res.status(201).json(movies);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
 });
 
-app.get("/movies/:title", (req, res) => {
-  const { title } = req.params;
-  const movie = movies.find((movie) => movie.Title === title);
-
-  if (movie) {
-    res.status(200).json(movie);
-  } else {
-    res.status(400).send("No such movie in database!");
-  }
+app.get("/movies/:Title", async (req, res) => {
+  await Movies.findOne({ Title: req.params.Title })
+    .then((movie) => {
+      res.json(movie);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
 });
 
-app.get('/movies/genre/:genreName', (req, res) => {
-const { genreName } = req.params;
-const genre = movies.find( movie => movie.Genre.Name === genreName).Genre;
-
-if (genre) {
-  res.status(200).json(genre);
-} else {
-  res.status(400).send("This Genre doesn't exist in this database!")
-}
+app.get("/movies/genre/:genreName", async (req, res) => {
+  await Movies.findOne({ "Genre.Name": req.params.genreName })
+    .then((movies) => {
+      res.json(movies);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
 });
 
-app.get('/movies/director/:directorName', (req, res) => {
-  const { directorName } = req.params;
-  const director = movies.find( movie => movie.Director.Name === directorName).Director;
-  
-  if (director) {
-    res.status(200).json(director);
-  } else {
-    res.status(400).send("This Genre doesn't exist in this database!")
-  }
+app.get("/movies/directors/:directorName", async (req, res) => {
+  await Movies.findOne({ "Director.Name": req.params.directorName })
+    .then((movies) => {
+      res.json(movies);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
+
+//User requests
+app.get("/users", async (req, res) => {
+  await Users.find()
+    .then((users) => {
+      res.status(201).json(users);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
+
+app.get("/users/:UserName", async (req, res) => {
+  await Users.findOne({ UserName: req.params.UserName })
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
+//DELETE requests
+app.delete("/users/:UserName/movies/:MovieID", async (req, res) => {
+  await Users.findOneAndUpdate({ UserName: req.params.UserName}, {
+    $pull:{FavoriteMovies: req.params.MovieID}
+  },
+  { new: true})
+  .then((updatedUser) => {
+    res.json(updatedUser);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
   });
-  
-
-//post requests
-app.post('/users', (req, res) => {
-  const newUser = req.body;
-
-  if (newUser.name){
-    newUser.id = uuid.v4();
-    users.push(newUser);
-    res.status(201).json(newUser)
-  } else {
-    res.status(400).send('Users need names.')
-  }
-
 });
 
-app.post('/users/:id/:movieTitle', (req, res) => {
-  const { id, movieTitle } = req.params;
-
-  let user = users.find( user => user.id == id);
-
-  if (user){
-    user.favoriteMovie.push(movieTitle);
-    res.status(200).send(`${movieTitle} has been added to user ${id}'s array`);
-  } else {
-    res.status(400).send('no such user');
-  }
+app.delete("/users/:UserName", async (req, res) => {
+  await Users.findOneAndDelete({ UserName: req.params.UserName})
+  .then((user) => {
+    if (!user) {
+      res.status(400).send(req.params.UserName + " was not found.");
+    } else {
+      res.status(200).send(req.params.UserName + " was deleted.");
+    }
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send("Erorr: " + err);
+  });
 });
 
-
-//delete requests
-app.delete('/users/:id/:movieTitle', (req, res) => {
-  const { id, movieTitle } = req.params;
-
-  let user = users.find( user => user.id == id);
-
-  if (user){
-    user.favoriteMovie = user.favoriteMovie.filter( title => title !== movieTitle)
-    res.status(200).send(`${movieTitle} has been removed from user ${id}'s array`);
-  } else {
-    res.status(400).send('no such user');
-  }
+//Documentation request
+app.get("/documentation", (req, res) => {
+  res.sendFile("public/documentation.html", { root: __dirname });
 });
 
-app.delete('/users/:id', (req, res) => {
-  const { id } = req.params;
-
-  let user = users.find( user => user.id == id);
-
-  if (user){
-    users = users.filter( user => user.id != id);
-    res.status(200).send(`user ${id} has been deleted.`);
-  } else {
-    res.status(400).send('no such user');
-  }
-});
-
-
-
-//put requests
-app.put('/users/:id', (req, res) => {
-  const { id } = req.params;
-  const updatedUser = req.body;
-
-  let user = users.find( user => user.id == id)
-
-  if (user) {
-    user.name = updatedUser.name;
-    res.status(200).json(user);
-  } else {
-    res.status(400).send('no such user.')
-  }
-
-});
-
-//static
-app.use(
-  "/documentation",
-  express.static("public", { index: "documentation.html" })
-);
-
-//error handling midleware
+// // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send(`Something's wrong!`);
 });
 
+// Listen for requests
 app.listen(8080, () => {
   console.log("This app is listening on port 8080.");
 });
