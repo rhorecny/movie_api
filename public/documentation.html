@@ -1,229 +1,165 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Documentation</title>
-  </head>
-  <body>
-    <h2 id="movie-api-documentation">Movie API Documentation</h2>
-    <p>
-      Welcome to the Movie API! 
-      <br> This API allows users to add, modify, and delete values in the user field,
-      <br> and access information in the movie field such as title, director, or genre.
-      <br> 
-    </p>
-    <h2 id="endpoints">Endpoints</h2>
-    <h3 id="movies">Movies</h3>
-    <h4 id="get-all-movies">Get All Movies</h4>
-    <ul>
-      <li>URL: <code>/movies</code></li>
-      <li>Method: <code>GET</code></li>
-      <li>Description: Get a list of all movies.</li>
-      <li>
-        Response:
-        <ul>
-          <li>200 OK: Returns an array of movie objects.</li>
-          <li>400 Bad Request: If there are no movies in the database.</li>
-        </ul>
-      </li>
-    </ul>
-    <h4 id="get-movie-by-title">Get Movie by Title</h4>
-    <ul>
-      <li>URL: <code>/movies/:title</code></li>
-      <li>Method: <code>GET</code></li>
-      <li>Description: Get details of a specific movie by its title.</li>
-      <li>
-        Request Parameters:
-        <ul>
-          <li><code>title</code>: Title of the movie.</li>
-        </ul>
-      </li>
-      <li>
-        Response:
-        <ul>
-          <li>200 OK: Returns details of the movie.</li>
-          <li>
-            400 Bad Request: If the movie with the specified title does not
-            exist.
-          </li>
-        </ul>
-      </li>
-    </ul>
-    <h4 id="get-movies-by-genre">Get Movies by Genre</h4>
-    <ul>
-      <li>URL: <code>/movies/genre/:genreName</code></li>
-      <li>Method: <code>GET</code></li>
-      <li>Description: Get movies belonging to a specific genre.</li>
-      <li>
-        Request Parameters:
-        <ul>
-          <li><code>genreName</code>: Name of the genre.</li>
-        </ul>
-      </li>
-      <li>
-        Response:
-        <ul>
-          <li>200 OK: Returns an array of movies of the specified genre.</li>
-          <li>
-            400 Bad Request: If the specified genre does not exist in the
-            database.
-          </li>
-        </ul>
-      </li>
-    </ul>
-    <h4 id="get-movies-by-director">Get Movies by Director</h4>
-    <ul>
-      <li>URL: <code>/movies/director/:directorName</code></li>
-      <li>Method: <code>GET</code></li>
-      <li>Description: Get movies directed by a specific director.</li>
-      <li>
-        Request Parameters:
-        <ul>
-          <li><code>directorName</code>: Name of the director.</li>
-        </ul>
-      </li>
-      <li>
-        Response:
-        <ul>
-          <li>
-            200 OK: Returns an array of movies directed by the specified
-            director.
-          </li>
-          <li>
-            400 Bad Request: If the specified director does not exist in the
-            database.
-          </li>
-        </ul>
-      </li>
-    </ul>
-    <h3 id="users">Users</h3>
-    <h4 id="add-user">Add User</h4>
-    <ul>
-      <li>URL: <code>/users</code></li>
-      <li>Method: <code>POST</code></li>
-      <li>Description: Add a new user.</li>
-      <li>
-        Request Body:
-        <ul>
-          <li><code>name</code>: Name of the user.</li>
-        </ul>
-      </li>
-      <li>
-        Response:
-        <ul>
-          <li>201 Created: Returns details of the newly created user.</li>
-          <li>
-            400 Bad Request: If the request body is missing the
-            <code>name</code> field.
-          </li>
-        </ul>
-      </li>
-    </ul>
-    <h4 id="add-favorite-movie-to-user">Add Favorite Movie to User</h4>
-    <ul>
-      <li>URL: <code>/users/:id/:movieTitle</code></li>
-      <li>Method: <code>POST</code></li>
-      <li>Description: Add a favorite movie to a user's list.</li>
-      <li>
-        Request Parameters:
-        <ul>
-          <li><code>id</code>: ID of the user.</li>
-          <li>
-            <code>movieTitle</code>: Title of the movie to be added to
-            favorites.
-          </li>
-        </ul>
-      </li>
-      <li>
-        Response:
-        <ul>
-          <li>
-            200 OK: Indicates successful addition of the movie to the user's
-            favorites.
-          </li>
-          <li>400 Bad Request: If the specified user does not exist.</li>
-        </ul>
-      </li>
-    </ul>
-    <h4 id="remove-favorite-movie-from-user">
-      Remove Favorite Movie from User
-    </h4>
-    <ul>
-      <li>URL: <code>/users/:id/:movieTitle</code></li>
-      <li>Method: <code>DELETE</code></li>
-      <li>Description: Remove a favorite movie from a user's list.</li>
-      <li>
-        Request Parameters:
-        <ul>
-          <li><code>id</code>: ID of the user.</li>
-          <li>
-            <code>movieTitle</code>: Title of the movie to be removed from
-            favorites.
-          </li>
-        </ul>
-      </li>
-      <li>
-        Response:
-        <ul>
-          <li>
-            200 OK: Indicates successful removal of the movie from the
-            user's favorites.
-          </li>
-          <li>400 Bad Request: If the specified user does not exist.</li>
-        </ul>
-      </li>
-    </ul>
-    <h4 id="delete-user">Delete User</h4>
-    <ul>
-      <li>URL: <code>/users/:id</code></li>
-      <li>Method: <code>DELETE</code></li>
-      <li>Description: Delete a user.</li>
-      <li>
-        Request Parameters:
-        <ul>
-          <li><code>id</code>: ID of the user to be deleted.</li>
-        </ul>
-      </li>
-      <li>
-        Response:
-        <ul>
-          <li>200 OK: Indicates successful deletion of the user.</li>
-          <li>400 Bad Request: If the specified user does not exist.</li>
-        </ul>
-      </li>
-    </ul>
-    <h4 id="update-user">Update User</h4>
-    <ul>
-      <li>URL: <code>/users/:id</code></li>
-      <li>Method: <code>PUT</code></li>
-      <li>Description: Update user information.</li>
-      <li>
-        Request Parameters:
-        <ul>
-          <li><code>id</code>: ID of the user to be updated.</li>
-        </ul>
-      </li>
-      <li>
-        Request Body:
-        <ul>
-          <li><code>name</code>: Updated name of the user.</li>
-        </ul>
-      </li>
-      <li>
-        Response:
-        <ul>
-          <li>200 OK: Returns details of the updated user.</li>
-          <li>400 Bad Request: If the specified user does not exist.</li>
-        </ul>
-      </li>
-    </ul>
-    <h2 id="error-handling">Error Handling</h2>
-    <ul>
-      <li>
-        500 Internal Server Error: Indicates an unexpected error occurred on the
-        server.
-      </li>
-    </ul>
-  </body>
-</html>
+<h1 id="movie-api-documentation">Movie API Documentation</h1>
+<p>Welcome to the Movie API! This API allows you to manage movies and user information.</p>
+<h2 id="authentication">Authentication</h2>
+<p>Authentication is required for certain endpoints using JSON Web Tokens (JWT) and HTTP authorization.</p>
+<p> Login Method: <code>POST</code></p>
+<p>To log in use <code>/login?UserName={username}&Password={password}</code> to get a JWT token.</p>
+<h2 id="endpoints">Endpoints</h2>
+<h3 id="users">Users</h3>
+<h4 id="update-user-information">Update User Information</h4>
+<ul>
+<li>URL: <code>/users/:UserName</code></li>
+<li>Method: <code>PUT</code></li>
+<li>Description: Update a user&#39;s information.</li>
+<li>Authentication: JWT token required.</li>
+<li>Request Parameters:<ul>
+<li><code>UserName</code>: Username of the user to be updated.</li>
+</ul>
+</li>
+<li>Request Body:<ul>
+<li><code>UserName</code>: New username.</li>
+<li><code>Password</code>: New password.</li>
+<li><code>Email</code>: New email address.</li>
+<li><code>Birthday</code>: New birthday.</li>
+</ul>
+</li>
+<li>Response:<ul>
+<li>200 OK: Returns details of the updated user.</li>
+<li>500 Internal Server Error: If an error occurs during the update process.</li>
+</ul>
+</li>
+</ul>
+<h4 id="add-user">Add User</h4>
+<ul>
+<li>URL: <code>/users</code></li>
+<li>Method: <code>POST</code></li>
+<li>Description: Add a new user.</li>
+<li>Request Body:<ul>
+<li><code>UserName</code>: Username of the new user.</li>
+<li><code>Password</code>: Password of the new user.</li>
+<li><code>Email</code>: Email address of the new user.</li>
+<li><code>Birthday</code>: Birthday of the new user.</li>
+</ul>
+</li>
+<li>Response:<ul>
+<li>201 Created: Returns details of the newly created user.</li>
+<li>500 Internal Server Error: If an error occurs during user creation.</li>
+</ul>
+</li>
+</ul>
+<h4 id="add-movie-to-user-s-favorites">Add Movie to User&#39;s Favorites</h4>
+<ul>
+<li>URL: <code>/users/:UserName/movies/:MovieID</code></li>
+<li>Method: <code>POST</code></li>
+<li>Description: Add a movie to a user&#39;s list of favorite movies.</li>
+<li>Authentication: JWT token required.</li>
+<li>Request Parameters:<ul>
+<li><code>UserName</code>: Username of the user.</li>
+<li><code>MovieID</code>: ID of the movie to be added to favorites.</li>
+</ul>
+</li>
+<li>Response:<ul>
+<li>200 OK: Returns details of the updated user.</li>
+<li>500 Internal Server Error: If an error occurs during the update process.</li>
+</ul>
+</li>
+</ul>
+<h4 id="delete-movie-from-user-s-favorites">Delete Movie from User&#39;s Favorites</h4>
+<ul>
+<li>URL: <code>/users/:UserName/movies/:MovieID</code></li>
+<li>Method: <code>DELETE</code></li>
+<li>Description: Delete a movie from a user&#39;s list of favorite movies.</li>
+<li>Authentication: JWT token required.</li>
+<li>Request Parameters:<ul>
+<li><code>UserName</code>: Username of the user.</li>
+<li><code>MovieID</code>: ID of the movie to be deleted from favorites.</li>
+</ul>
+</li>
+<li>Response:<ul>
+<li>200 OK: Returns details of the updated user.</li>
+<li>500 Internal Server Error: If an error occurs during the update process.</li>
+</ul>
+</li>
+</ul>
+<h4 id="delete-user">Delete User</h4>
+<ul>
+<li>URL: <code>/users/:UserName</code></li>
+<li>Method: <code>DELETE</code></li>
+<li>Description: Delete a user.</li>
+<li>Authentication: JWT token required.</li>
+<li>Request Parameters:<ul>
+<li><code>UserName</code>: Username of the user to be deleted.</li>
+</ul>
+</li>
+<li>Response:<ul>
+<li>200 OK: Indicates successful deletion of the user.</li>
+<li>400 Bad Request: If the specified user does not exist.</li>
+<li>500 Internal Server Error: If an error occurs during the deletion process.</li>
+</ul>
+</li>
+</ul>
+<h3 id="movies">Movies</h3>
+<h4 id="get-all-movies">Get All Movies</h4>
+<ul>
+<li>URL: <code>/movies</code></li>
+<li>Method: <code>GET</code></li>
+<li>Description: Get a list of all movies.</li>
+<li>Authentication: JWT token required.</li>
+<li>Response:<ul>
+<li>200 OK: Returns an array of movie objects.</li>
+<li>500 Internal Server Error: If an error occurs during the retrieval process.</li>
+</ul>
+</li>
+</ul>
+<h4 id="get-movie-by-title">Get Movie by Title</h4>
+<ul>
+<li>URL: <code>/movies/:Title</code></li>
+<li>Method: <code>GET</code></li>
+<li>Description: Get details of a specific movie by its title.</li>
+<li>Authentication: JWT token required.</li>
+<li>Request Parameters:<ul>
+<li><code>Title</code>: Title of the movie.</li>
+</ul>
+</li>
+<li>Response:<ul>
+<li>200 OK: Returns details of the movie.</li>
+<li>500 Internal Server Error: If an error occurs during the retrieval process.</li>
+</ul>
+</li>
+</ul>
+<h4 id="get-movies-by-genre">Get Movies by Genre</h4>
+<ul>
+<li>URL: <code>/movies/genre/:genreName</code></li>
+<li>Method: <code>GET</code></li>
+<li>Description: Get movies belonging to a specific genre.</li>
+<li>Authentication: JWT token required.</li>
+<li>Request Parameters:<ul>
+<li><code>genreName</code>: Name of the genre.</li>
+</ul>
+</li>
+<li>Response:<ul>
+<li>200 OK: Returns an array of movies of the specified genre.</li>
+<li>500 Internal Server Error: If an error occurs during the retrieval process.</li>
+</ul>
+</li>
+</ul>
+<h4 id="get-movies-by-director">Get Movies by Director</h4>
+<ul>
+<li>URL: <code>/movies/directors/:directorName</code></li>
+<li>Method: <code>GET</code></li>
+<li>Description: Get movies directed by a specific director.</li>
+<li>Authentication: JWT token required.</li>
+<li>Request Parameters:<ul>
+<li><code>directorName</code>: Name of the director.</li>
+</ul>
+</li>
+<li>Response:<ul>
+<li>200 OK: Returns an array of movies directed by the specified director.</li>
+<li>500 Internal Server Error: If an error occurs during the retrieval process.</li>
+</ul>
+</li>
+</ul>
+<h2 id="error-handling">Error Handling</h2>
+<ul>
+<li>500 Internal Server Error: Indicates an unexpected error occurred on the server.</li>
+</ul>
